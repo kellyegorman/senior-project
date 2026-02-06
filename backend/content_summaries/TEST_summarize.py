@@ -122,14 +122,31 @@ lda_model = LdaModel(
 #     topic_words = re.findall(r'\"(.*?)\"', topic)
 #     print(f"THE TOPIC IS {' '.join(topic_words)}")
 
+
+
 # only print the first three words in the first topic
-for idx, topic in lda_model.print_topics(-1):
-    if idx == 0:
-        topic_words = re.findall(r'\"(.*?)\"', topic)
-        print(f"THE TOPIC IS {' '.join(topic_words[:3])}")
-
 # for idx, topic in lda_model.print_topics(-1):
-#     print(f"THE TOPIC IS {topic}")
+#     if idx == 0:
+#         topic_words = re.findall(r'\"(.*?)\"', topic)
+#         print(f"THE TOPIC IS {' '.join(topic_words[:3])}")
 
-# compute coherence score
-# coherence_model_lda = CoherenceModel(model=lda_model, texts=[processed_text], dictionary=dictionary, coherence='c_v')
+
+# move above logic to function that takes in text and outputs the top 3 words in the topic
+def get_topics(text):
+    processed_text = txt_preprocess_pipeline(text)
+    dictionary = corpora.Dictionary([processed_text])
+    corpus = [dictionary.doc2bow(processed_text)]
+    lda_model = LdaModel(
+        corpus=corpus,
+        id2word=dictionary,
+        num_topics=3,
+        random_state=13,
+        passes=10
+    )
+    topics = []
+    for idx, topic in lda_model.print_topics(-1):
+        topic_words = re.findall(r'\"(.*?)\"', topic)
+        topics.append(' '.join(topic_words[:3]))
+    return topics
+
+print(get_topics(texts_computer_science_example))
