@@ -92,7 +92,7 @@ Education in computer science typically involves learning programming languages,
 Many universities and institutions offer specialized programs and degrees in computer science, preparing students for careers in academia, industry, and research.
 The impact of computer science on society is profound, influencing how we communicate, work, and live our daily lives. As technology continues to advance, the importance of computer science will only grow, shaping the future in unprecedented ways.
 """
-# top 3 output!!!: pittsburgh city include
+# top 3 output!!!: computer science program
 
 # load dictionary
 # dictionary = corpora.Dictionary()
