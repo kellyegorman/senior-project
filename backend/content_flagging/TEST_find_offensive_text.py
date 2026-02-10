@@ -12,6 +12,7 @@ import tensorflow.keras.backend as K
 # from keras import backend as K
 import joblib
 import matplotlib.pyplot as plt
+# from backend.content_summaries.TEST_url_text import get_url_text
 # followed tutorial : https://www.kaggle.com/code/victornicofac/hate-speech-and-offensive-language-detection
 
 data = pd.read_csv('backend/content_flagging/labeled_data.csv')
@@ -86,8 +87,16 @@ def preprocess(datas):
 
     return clean
 
-clean_tweet = preprocess(tweet)
-# print(clean_tweet[:5])
+def get_url_text(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, "html.parser")
+        page_text = soup.get_text(separator='\n', strip=True)
+        return page_text
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return None
 
 # split train/validation
 X_train, X_test, y_train, y_test = train_test_split(clean_tweet, labels, test_size=0.2, random_state=42)
@@ -171,7 +180,7 @@ model_history = model.fit(
 )
 
 # save model
-joblib.dump(model,'backend/content_flagging/model.sav')
+model.save("backend/content_flagging/offensive_model.keras")
 
 hist = model.history.history
 plt.plot(hist['loss'],'r',linewidth=2, label='Training loss')
@@ -180,3 +189,24 @@ plt.title('Hate Speech and Offensive language Model')
 plt.xlabel('Epochs numbers')
 plt.ylabel('MSE numbers')
 plt.show()
+
+
+# XXXXX TEST w/ URL TEXT
+
+# def predict_offensive(text):
+#     clean_text = preprocess(text)
+#     seq = tokenizer.texts_to_sequences([clean_text])
+#     padded_seq = pad_sequences(seq, maxlen=max_length)
+#     pred = model.predict(padded_seq)
+#     pred_label = pred.argmax(axis=1)[0]
+#     return pred_label
+
+# def predict_offensive_from_url(url):
+#     url_text = get_url_text(url)
+#     if url_text:
+#         return predict_offensive(url_text)
+#     else:
+#         return None
+    
+# if __name__ == "__main__":
+#     print(predict_offensive_from_url("https://www.reddit.com/r/AmItheAsshole/comments/15h8l7u/aita_for_telling_my_sister_to_stop_talking_to/"))
