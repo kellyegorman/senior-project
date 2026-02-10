@@ -8,8 +8,10 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
 from keras.utils import to_categorical
-from keras import backend as K
+import tensorflow.keras.backend as K
+# from keras import backend as K
 import joblib
+import matplotlib.pyplot as plt
 # followed tutorial : https://www.kaggle.com/code/victornicofac/hate-speech-and-offensive-language-detection
 
 data = pd.read_csv('backend/content_flagging/labeled_data.csv')
@@ -168,3 +170,13 @@ model_history = model.fit(
     validation_data=(X_test, y_test)
 )
 
+# save model
+joblib.dump(model,'backend/content_flagging/model.sav')
+
+hist = model.history.history
+plt.plot(hist['loss'],'r',linewidth=2, label='Training loss')
+plt.plot(hist['val_loss'], 'g',linewidth=2, label='Validation loss')
+plt.title('Hate Speech and Offensive language Model')
+plt.xlabel('Epochs numbers')
+plt.ylabel('MSE numbers')
+plt.show()
