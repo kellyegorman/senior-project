@@ -121,10 +121,19 @@ def predict_offensive_from_url(url):
         return None
     chunks = split_into_chunks(url_text)
     results = [predict_offensive(chunk) for chunk in chunks]
-    if "HATE_SPEECH" in results or "OFFENSIVE" in results:
+
+    # print the chunks labelled as HATE_SPEECH or OFFENSIVE
+    for i, result in enumerate(results):
+        if result in ["HATE_SPEECH", "OFFENSIVE"]:
+            print(f"Chunk {i}: {result}: {chunks[i]}")
+
+    # if over half of the chunks are flagged, flag the whole text
+    if results.count("HATE_SPEECH") + results.count("OFFENSIVE") > len(results) / 2:
         return "FLAGGED"
     else:
-        return "CLEAN" 
+        return "CLEAN"
        
+
+
 if __name__ == "__main__":
-    print(predict_offensive_from_url("https://wwf.org.au/blogs/9-interesting-platypus-facts/"))
+    print(predict_offensive_from_url("https://www.ashleyhajimirsadeghi.com/blog/wicked-part-one-2024"))
