@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+python-dotenv
+passlib==1.7.4
+bcrypt==4.1.3
