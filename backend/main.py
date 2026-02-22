@@ -1,11 +1,21 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from pydantic import BaseModel, Field
 import uuid
 from passlib.context import CryptContext
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+
+def require_api_key(x_api_key: str | None):
+    if not API_KEY:
+        raise RuntimeError("API_KEY not set")
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API key")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -48,7 +58,8 @@ def list_tables():
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/users")
-def create_user(user: UserCreate):
+def create_user(user: UserCreate, x_api_key: str | None = Header(default=None)):
+    require_api_key(x_api_key)
     try:
         user_id = str(uuid.uuid4())[:15]
         hashed_password = pwd_context.hash(user.password)
