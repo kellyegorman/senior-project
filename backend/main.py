@@ -26,10 +26,6 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not found in .env")
 
-# Railway often provides mysql:// which makes SQLAlchemy try MySQLdb
-if DATABASE_URL.startswith("mysql://"):
-    DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
-
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 app = FastAPI(title="Capstone API")
