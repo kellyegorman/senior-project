@@ -26,6 +26,10 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not found in .env")
 
+# Railway often provides mysql:// which makes SQLAlchemy try MySQLdb
+if DATABASE_URL.startswith("mysql://"):
+    DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 app = FastAPI(title="Capstone API")
@@ -82,7 +86,7 @@ def create_user(user: UserCreate, x_api_key: str | None = Header(default=None)):
         return {"message": "User created", "userid": user_id}
 
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=repr(e))
     
 @app.get("/users")
 def get_users():
