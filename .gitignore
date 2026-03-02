@@ -12,3 +12,5 @@ backend/.env
 
 # Environment variables
 .env
+
+.DS_Store
